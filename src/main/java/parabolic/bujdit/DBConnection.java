@@ -1,9 +1,11 @@
 package parabolic.bujdit;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.sql.*;
 import java.util.Properties;
 
-public class DBConnection {
+public class DBConnection implements AutoCloseable {
 
     private Connection dbcon;
 
@@ -11,6 +13,17 @@ public class DBConnection {
         Properties props = new Properties();
         props.setProperty("user", "postgres");
         dbcon = DriverManager.getConnection("jdbc:postgresql://localhost/bujdit", props);
+
+    }
+
+    @Override
+    public void close() {
+        try {
+            dbcon.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.exit(-1);
+        }
     }
 
     void beginTransaction() {
@@ -44,6 +57,8 @@ public class DBConnection {
             ps.setInt(idx, (Integer) ob);
         } else if (ob.getClass() == String.class) {
             ps.setString(idx, (String) ob);
+        } else if (ob instanceof JsonNode) {
+            ps.setString(idx, ((JsonNode)ob).toString());
         } else {
             throw new IllegalArgumentException();
         }

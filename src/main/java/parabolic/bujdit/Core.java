@@ -26,28 +26,22 @@ public class Core {
     private static void handleJavalinCtx(Context ctx) {
 
         JsonNode rootNode;
-        ObjectMapper mapper = new ObjectMapper();
 
         try {
-            rootNode = mapper.readTree(ctx.body());
+            CommandProcessor proc = new CommandProcessor();
+            rootNode = new ObjectMapper().readTree(ctx.body());
         }
         catch (IOException ex) {
             ctx.result("invalid json");
             return;
         }
 
-        try {
-            CommandProcessor proc = new CommandProcessor();
-            ctx.json(proc.process(rootNode));
-        }
-        catch (SQLException ex) {
-            ctx.json(String.format("{\"success\":false,\"code\":%s}", Code.ServerException));
-        }
+        CommandProcessor proc = new CommandProcessor();
+        ctx.json(proc.process(rootNode));
     }
 
     private static void initializeDB() {
-        try {
-            DBConnection pgcon = new DBConnection();
+        try (DBConnection pgcon = new DBConnection()) {
 
             String str =
                 "CREATE TABLE IF NOT EXISTS users ("+

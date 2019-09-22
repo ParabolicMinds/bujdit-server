@@ -7,14 +7,13 @@ public enum Code {
     ServerException(1),
     CommandNotFound(2),
     MissingRequiredField(3),
+    InvalidFieldFormat(4),
 
-    // USER
+    // USER ACCESS
     UsernameOrPasswordInvalid(100),
     ExpiredOrInvalidSession(101),
     CommandRequiresAuthentication(102),
-
-    // BUJDIT
-    BujditNotFound(200),
+    NotFoundOrInsufficientPermissions(103),
     ;
 
     public final int code;
