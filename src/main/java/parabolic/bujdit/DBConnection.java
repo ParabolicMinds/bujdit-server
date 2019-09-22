@@ -26,7 +26,7 @@ public class DBConnection implements AutoCloseable {
         }
     }
 
-    void beginTransaction() {
+    public void beginTransaction() {
         try {
             dbcon.setAutoCommit(false);
         } catch (SQLException ex) {
@@ -35,7 +35,7 @@ public class DBConnection implements AutoCloseable {
         }
     }
 
-    void endTransaction(boolean commit) {
+    public void endTransaction(boolean commit) {
         try {
             if (commit) dbcon.commit();
             else dbcon.rollback();
@@ -46,7 +46,7 @@ public class DBConnection implements AutoCloseable {
         }
     }
 
-    void endTransaction() {
+    public void endTransaction() {
         endTransaction(true);
     }
 
@@ -64,7 +64,7 @@ public class DBConnection implements AutoCloseable {
         }
     }
 
-    void update(String queryStr, Object ... vars) throws SQLException {
+    public void update(String queryStr, Object ... vars) throws SQLException {
         PreparedStatement ps = dbcon.prepareStatement(queryStr);
         for (int i = 0; i < vars.length; i++) {
             setValue(ps, i + 1, vars[i]);
@@ -72,7 +72,7 @@ public class DBConnection implements AutoCloseable {
         ps.executeUpdate();
     }
 
-    ResultSet query(String queryStr, Object ... vars) throws SQLException {
+    public ResultSet query(String queryStr, Object ... vars) throws SQLException {
         PreparedStatement ps = dbcon.prepareStatement(queryStr);
         for (int i = 0; i < vars.length; i++) {
             setValue(ps, i + 1, vars[i]);
