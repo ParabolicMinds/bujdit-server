@@ -13,7 +13,7 @@ public enum Code {
     UsernameOrPasswordInvalid(100),
     ExpiredOrInvalidSession(101),
     CommandRequiresAuthentication(102),
-    NotFoundOrInsufficientPermissions(103),
+    NotFoundOrInsufficientAccess(103),
     ;
 
     public final int code;

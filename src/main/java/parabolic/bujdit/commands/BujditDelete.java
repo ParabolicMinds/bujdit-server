@@ -22,12 +22,12 @@ public class BujditDelete implements ICommand {
         if (id == -1) return Code.MissingRequiredField;
 
         String sqlstr =
-                "SELECT id FROM bujdit"+
-                        " INNER JOIN bujdit_user ON bujdit.id = bujdit_id"+
-                        " WHERE bujdit_id = ? AND permission >= 4";
+            "SELECT id FROM bujdit"+
+            " INNER JOIN bujdit_user ON bujdit.id = bujdit_id"+
+            " WHERE bujdit_id = ? AND permission >= 4";
 
         ResultSet rs = dbcon.query(sqlstr, id);
-        if (!rs.next()) return Code.NotFoundOrInsufficientPermissions;
+        if (!rs.next()) return Code.NotFoundOrInsufficientAccess;
 
         dbcon.update("DELETE FROM bujdit WHERE id = ?", id);
 

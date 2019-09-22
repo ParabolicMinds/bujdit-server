@@ -22,7 +22,9 @@ class CommandProcessor {
             "bujdit_list", BujditList.class,
             "bujdit_delete", BujditDelete.class,
             "bujdit_meta_get", BujditMetaGet.class,
-            "bujdit_meta_set", BujditMetaSet.class
+            "bujdit_meta_set", BujditMetaSet.class,
+            "bujdit_user_meta_get", BujditUserMetaGet.class,
+            "bujdit_user_meta_set", BujditUserMetaSet.class
     );
 
     CommandProcessor() {}

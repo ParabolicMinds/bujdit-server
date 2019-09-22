@@ -8,10 +8,11 @@ import parabolic.bujdit.Code;
 import parabolic.bujdit.DBConnection;
 import parabolic.bujdit.RequestPersist;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BujditMetaGet implements ICommand {
+public class BujditUserMetaSet implements ICommand {
 
     @Override
     public Code execute(RequestPersist pers, DBConnection dbcon, JsonNode cmd, ObjectNode response) throws SQLException {
@@ -20,28 +21,38 @@ public class BujditMetaGet implements ICommand {
         }
 
         long id = BHF.extractLong(cmd.get("id"), -1);
-        if (id == -1) return Code.MissingRequiredField;
+        String metaStr = BHF.extractString(cmd.get("meta"));
+        if (id == -1 || metaStr.isEmpty()) return Code.MissingRequiredField;
+
+        JsonNode meta;
+        try {
+            meta = new ObjectMapper().readTree(metaStr);
+        } catch (IOException e) {
+            return Code.InvalidFieldFormat;
+        }
 
         String field = BHF.extractString(cmd.get("field"));
 
         String sqlstr =
-            "SELECT bujdit.meta AS meta"+
+            "SELECT bujdit_user.meta AS meta"+
             " FROM bujdit"+
             " INNER JOIN bujdit_user ON bujdit.id = bujdit_id"+
-            " WHERE user_id = ? AND bujdit_id = ? AND permission >= 1";
+            " WHERE user_id = ? AND bujdit_id = ?";
 
         ResultSet rs = dbcon.query(sqlstr, pers.userId, id);
         if (!rs.next()) return Code.NotFoundOrInsufficientAccess;
 
-        JsonNode meta = BHF.String2JSON(rs.getString(1));
+        JsonNode metaSet;
 
         if (field.isEmpty()) {
-            response.set("meta", meta);
-            return Code.Success;
+            metaSet = meta;
+        } else {
+            ObjectNode metaGet = BHF.String2JSON(rs.getString(1));
+            metaGet.set(field, meta);
+            metaSet = metaGet;
         }
 
-        JsonNode fieldNode = meta.get(field);
-        response.set("meta", fieldNode == null ? new ObjectMapper().createObjectNode().nullNode() : fieldNode);
+        dbcon.update("UPDATE bujdit_user SET meta = ?::JSON WHERE bujdit_id = ? AND user_id = ?", metaSet, id, pers.userId);
 
         return Code.Success;
     }

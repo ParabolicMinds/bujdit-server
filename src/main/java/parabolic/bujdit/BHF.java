@@ -25,16 +25,19 @@ public class BHF { // Bujdit Helper Functions
     }
 
     private static final ObjectMapper mapper = new ObjectMapper();
-    public static ObjectNode String2JSON(String str) {
-        if (str == null || str.isEmpty()) {
+
+    public static ObjectNode String2JSONSafe(String str) throws IOException {
+        if (str == null || str.isEmpty())
             return mapper.createObjectNode();
-        } else {
-            try {
-                return (ObjectNode)mapper.readTree(str);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return mapper.createObjectNode();
-            }
+        return (ObjectNode)mapper.readTree(str);
+    }
+
+    public static ObjectNode String2JSON(String str) {
+        try {
+            return String2JSONSafe(str);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return mapper.createObjectNode();
         }
     }
 

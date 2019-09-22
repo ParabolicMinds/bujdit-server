@@ -22,11 +22,11 @@ public class BujditList implements ICommand {
         boolean includeMeta = BHF.extractBoolean(cmd.get("include_meta"), false);
 
         String sqlstr =
-                "SELECT id, name, permission" + (includeMeta ? ", bujdit.meta AS meta, bujdit_user.meta AS user_meta" : "") +
-                        " FROM bujdit"+
-                        " INNER JOIN bujdit_user ON bujdit.id = bujdit_id"+
-                        " WHERE user_id = ? AND permission >= 1"+
-                        " ORDER BY id ASC";
+            "SELECT id, name, permission" + (includeMeta ? ", bujdit.meta AS meta, bujdit_user.meta AS user_meta" : "") +
+            " FROM bujdit"+
+            " INNER JOIN bujdit_user ON bujdit.id = bujdit_id"+
+            " WHERE user_id = ? AND permission >= 1"+
+            " ORDER BY id ASC";
         ResultSet rs = dbcon.query(sqlstr, pers.userId);
 
         ArrayNode bujdits = response.putArray("bujdits");

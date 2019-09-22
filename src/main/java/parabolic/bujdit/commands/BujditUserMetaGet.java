@@ -11,7 +11,7 @@ import parabolic.bujdit.RequestPersist;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BujditMetaGet implements ICommand {
+public class BujditUserMetaGet implements ICommand {
 
     @Override
     public Code execute(RequestPersist pers, DBConnection dbcon, JsonNode cmd, ObjectNode response) throws SQLException {
@@ -25,10 +25,9 @@ public class BujditMetaGet implements ICommand {
         String field = BHF.extractString(cmd.get("field"));
 
         String sqlstr =
-            "SELECT bujdit.meta AS meta"+
-            " FROM bujdit"+
-            " INNER JOIN bujdit_user ON bujdit.id = bujdit_id"+
-            " WHERE user_id = ? AND bujdit_id = ? AND permission >= 1";
+            "SELECT meta"+
+            " FROM bujdit_user"+
+            " WHERE user_id = ? AND bujdit_id = ?";
 
         ResultSet rs = dbcon.query(sqlstr, pers.userId, id);
         if (!rs.next()) return Code.NotFoundOrInsufficientAccess;

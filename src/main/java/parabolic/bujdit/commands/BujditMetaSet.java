@@ -34,13 +34,13 @@ public class BujditMetaSet implements ICommand {
         String field = BHF.extractString(cmd.get("field"));
 
         String sqlstr =
-                "SELECT bujdit.meta AS meta"+
-                        " FROM bujdit"+
-                        " INNER JOIN bujdit_user ON bujdit.id = bujdit_id"+
-                        " WHERE user_id = ? AND bujdit_id = ? AND permission >= 2";
+            "SELECT bujdit.meta AS meta"+
+            " FROM bujdit"+
+            " INNER JOIN bujdit_user ON bujdit.id = bujdit_id"+
+            " WHERE user_id = ? AND bujdit_id = ? AND permission >= 2";
 
         ResultSet rs = dbcon.query(sqlstr, pers.userId, id);
-        if (!rs.next()) return Code.NotFoundOrInsufficientPermissions;
+        if (!rs.next()) return Code.NotFoundOrInsufficientAccess;
 
         JsonNode metaSet;
 
@@ -52,11 +52,7 @@ public class BujditMetaSet implements ICommand {
             metaSet = metaGet;
         }
 
-        sqlstr =
-                "UPDATE bujdit"+
-                        " SET meta = ?::JSON"+
-                        " WHERE id = ?";
-        dbcon.update(sqlstr, metaSet, id);
+        dbcon.update("UPDATE bujdit SET meta = ?::JSON WHERE id = ?", metaSet, id);
 
         return Code.Success;
     }
