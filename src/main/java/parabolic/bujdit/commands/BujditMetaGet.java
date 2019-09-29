@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import parabolic.bujdit.BHF;
 import parabolic.bujdit.Code;
-import parabolic.bujdit.DBConnection;
+import parabolic.bujdit.DB.Connection;
 import parabolic.bujdit.RequestPersist;
 
 import java.sql.ResultSet;
@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class BujditMetaGet implements ICommand {
 
     @Override
-    public Code execute(RequestPersist pers, DBConnection dbcon, JsonNode cmd, ObjectNode response) throws SQLException {
+    public Code execute(RequestPersist pers, Connection dbcon, JsonNode cmd, ObjectNode response) throws SQLException {
         if (!pers.loggedIn) {
             return Code.CommandRequiresAuthentication;
         }

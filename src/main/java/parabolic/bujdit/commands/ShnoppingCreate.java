@@ -10,7 +10,7 @@ import parabolic.bujdit.RequestPersist;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BujditCreate implements ICommand {
+public class ShnoppingCreate implements ICommand {
 
     @Override
     public Code execute(RequestPersist pers, Connection dbcon, JsonNode cmd, ObjectNode response) throws SQLException {
@@ -28,13 +28,13 @@ public class BujditCreate implements ICommand {
 
         dbcon.beginTransaction();
         if (meta.isEmpty()) {
-            rs = dbcon.query("INSERT INTO bujdit (name) VALUES (?) RETURNING id", name);
+            rs = dbcon.query("INSERT INTO shnopping (name) VALUES (?) RETURNING id", name);
         } else {
-            rs = dbcon.query("INSERT INTO bujdit (name, meta) VALUES (?, ?::JSON) RETURNING id", name, meta);
+            rs = dbcon.query("INSERT INTO shnopping (name, meta) VALUES (?, ?::JSON) RETURNING id", name, meta);
         }
         rs.next();
         response.put("id", rs.getLong(1));
-        dbcon.update("INSERT INTO bujdit_user (user_id, bujdit_id, permission) VALUES (?, ?, 4)", pers.userId, rs.getInt(1));
+        dbcon.update("INSERT INTO shnopping_user (user_id, shnopping_id, permission) VALUES (?, ?, 4)", pers.userId, rs.getInt(1));
         dbcon.endTransaction();
 
         return Code.Success;

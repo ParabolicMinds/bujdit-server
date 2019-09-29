@@ -1,10 +1,10 @@
-package parabolic.bujdit;
+package parabolic.bujdit.DB;
 
 import java.sql.SQLException;
 
-public class DBMaintainer extends Thread {
+public class Maintainer extends Thread {
 
-    DBMaintainer() { }
+    public Maintainer() { }
 
     @Override
     public void run() {
@@ -14,7 +14,7 @@ public class DBMaintainer extends Thread {
                 Thread.sleep(5000);
             } catch (InterruptedException ignored) { }
 
-            try (DBConnection dbcon = new DBConnection()) {
+            try (Connection dbcon = new Connection()) {
                 dbcon.update("DELETE FROM session WHERE activity < NOW() - ?::INTERVAL", "30 MINUTES");
             } catch (SQLException ex) {
                 ex.printStackTrace();

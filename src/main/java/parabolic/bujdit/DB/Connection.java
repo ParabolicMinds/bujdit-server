@@ -1,21 +1,20 @@
-package parabolic.bujdit;
+package parabolic.bujdit.DB;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.sql.*;
 import java.util.Properties;
 
-public class DBConnection implements AutoCloseable {
+public class Connection implements AutoCloseable {
 
-    private Connection dbcon;
+    private java.sql.Connection dbcon;
 
-    DBConnection() throws SQLException {
+    public Connection() throws SQLException {
         Properties props = new Properties();
         props.setProperty("user", "postgres");
         dbcon = DriverManager.getConnection("jdbc:postgresql://localhost/bujdit", props);
 
     }
-
     @Override
     public void close() {
         try {
@@ -51,7 +50,14 @@ public class DBConnection implements AutoCloseable {
     }
 
     private static void setValue(PreparedStatement ps, int idx, Object ob) throws SQLException {
-        if (ob.getClass() == Long.class) {
+        if (ob.getClass() == Nulls.class) {
+            switch ((Nulls) ob) {
+            case Integer:
+                ps.setNull(idx, Types.BIGINT);
+            case String:
+                ps.setNull(idx, Types.VARCHAR);
+            }
+        } else if (ob.getClass() == Long.class) {
             ps.setLong(idx, (Long) ob);
         } else if (ob.getClass() == Integer.class) {
             ps.setInt(idx, (Integer) ob);
@@ -64,12 +70,12 @@ public class DBConnection implements AutoCloseable {
         }
     }
 
-    public void update(String queryStr, Object ... vars) throws SQLException {
+    public int update(String queryStr, Object ... vars) throws SQLException {
         PreparedStatement ps = dbcon.prepareStatement(queryStr);
         for (int i = 0; i < vars.length; i++) {
             setValue(ps, i + 1, vars[i]);
         }
-        ps.executeUpdate();
+        return ps.executeUpdate();
     }
 
     public ResultSet query(String queryStr, Object ... vars) throws SQLException {

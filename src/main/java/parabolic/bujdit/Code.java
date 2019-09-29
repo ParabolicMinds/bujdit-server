@@ -8,6 +8,7 @@ public enum Code {
     CommandNotFound(2),
     MissingRequiredField(3),
     InvalidFieldFormat(4),
+    DuplicateEntryRejected(5),
 
     // USER ACCESS
     UsernameOrPasswordInvalid(100),

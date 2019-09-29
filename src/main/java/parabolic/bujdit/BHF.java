@@ -19,6 +19,12 @@ public class BHF { // Bujdit Helper Functions
         else return node.asText("");
     }
 
+    public static String extractString(JsonNode node, String def) {
+        if (node == null || node.isNull()) return def;
+        if (!node.isTextual()) return node.toString();
+        else return node.asText(def);
+    }
+
     public static long extractLong(JsonNode node, long def) {
         if (node == null || node.isNull()) return def;
         else return node.asLong(def);

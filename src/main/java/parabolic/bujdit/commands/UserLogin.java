@@ -3,7 +3,7 @@ package parabolic.bujdit.commands;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import parabolic.bujdit.Code;
-import parabolic.bujdit.DBConnection;
+import parabolic.bujdit.DB.Connection;
 import parabolic.bujdit.BHF;
 import parabolic.bujdit.RequestPersist;
 
@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public class UserLogin implements ICommand {
 
     @Override
-    public Code execute(RequestPersist pers, DBConnection dbcon, JsonNode cmd, ObjectNode response) throws SQLException {
+    public Code execute(RequestPersist pers, Connection dbcon, JsonNode cmd, ObjectNode response) throws SQLException {
         String username = BHF.extractString(cmd.get("username"));
         String password = BHF.extractString(cmd.get("password"));
 

@@ -8,10 +8,11 @@ import parabolic.bujdit.Code;
 import parabolic.bujdit.DB.Connection;
 import parabolic.bujdit.RequestPersist;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BujditUserMetaGet implements ICommand {
+public class ShnoppingMetaSet implements ICommand {
 
     @Override
     public Code execute(RequestPersist pers, Connection dbcon, JsonNode cmd, ObjectNode response) throws SQLException {
@@ -20,27 +21,38 @@ public class BujditUserMetaGet implements ICommand {
         }
 
         long id = BHF.extractLong(cmd.get("id"), -1);
-        if (id == -1) return Code.MissingRequiredField;
+        String metaStr = BHF.extractString(cmd.get("meta"));
+        if (id == -1 || metaStr.isEmpty()) return Code.MissingRequiredField;
+
+        JsonNode meta;
+        try {
+            meta = new ObjectMapper().readTree(metaStr);
+        } catch (IOException e) {
+            return Code.InvalidFieldFormat;
+        }
 
         String field = BHF.extractString(cmd.get("field"));
 
         String sqlstr =
-            "SELECT meta"+
-            " FROM bujdit_user"+
-            " WHERE user_id = ? AND bujdit_id = ?";
+            "SELECT shnopping.meta AS meta"+
+            " FROM shnopping"+
+            " INNER JOIN shnopping_user ON shnopping.id = shnopping_id"+
+            " WHERE user_id = ? AND shnopping_id = ? AND permission >= 2";
 
         ResultSet rs = dbcon.query(sqlstr, pers.userId, id);
         if (!rs.next()) return Code.NotFoundOrInsufficientAccess;
 
-        JsonNode meta = BHF.String2JSON(rs.getString(1));
+        JsonNode metaSet;
 
         if (field.isEmpty()) {
-            response.set("meta", meta);
-            return Code.Success;
+            metaSet = meta;
+        } else {
+            ObjectNode metaGet = BHF.String2JSON(rs.getString(1));
+            metaGet.set(field, meta);
+            metaSet = metaGet;
         }
 
-        JsonNode fieldNode = meta.get(field);
-        response.set("meta", fieldNode == null ? new ObjectMapper().createObjectNode().nullNode() : fieldNode);
+        dbcon.update("UPDATE shnopping SET meta = ?::JSON WHERE id = ?", metaSet, id);
 
         return Code.Success;
     }

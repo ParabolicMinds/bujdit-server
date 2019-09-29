@@ -1,7 +1,6 @@
 package parabolic.bujdit.commands;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import parabolic.bujdit.BHF;
 import parabolic.bujdit.Code;
@@ -11,7 +10,7 @@ import parabolic.bujdit.RequestPersist;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BujditUserMetaGet implements ICommand {
+public class ShnoppingDelete implements ICommand {
 
     @Override
     public Code execute(RequestPersist pers, Connection dbcon, JsonNode cmd, ObjectNode response) throws SQLException {
@@ -22,25 +21,15 @@ public class BujditUserMetaGet implements ICommand {
         long id = BHF.extractLong(cmd.get("id"), -1);
         if (id == -1) return Code.MissingRequiredField;
 
-        String field = BHF.extractString(cmd.get("field"));
-
         String sqlstr =
-            "SELECT meta"+
-            " FROM bujdit_user"+
-            " WHERE user_id = ? AND bujdit_id = ?";
+            "SELECT id FROM shnopping"+
+            " INNER JOIN shnopping_user ON shnopping.id = shnopping_id"+
+            " WHERE shnopping_id = ? AND permission >= 4";
 
-        ResultSet rs = dbcon.query(sqlstr, pers.userId, id);
+        ResultSet rs = dbcon.query(sqlstr, id);
         if (!rs.next()) return Code.NotFoundOrInsufficientAccess;
 
-        JsonNode meta = BHF.String2JSON(rs.getString(1));
-
-        if (field.isEmpty()) {
-            response.set("meta", meta);
-            return Code.Success;
-        }
-
-        JsonNode fieldNode = meta.get(field);
-        response.set("meta", fieldNode == null ? new ObjectMapper().createObjectNode().nullNode() : fieldNode);
+        dbcon.update("DELETE FROM shnopping WHERE id = ?", id);
 
         return Code.Success;
     }

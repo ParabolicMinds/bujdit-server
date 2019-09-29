@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import parabolic.bujdit.DB.Connection;
 import parabolic.bujdit.commands.*;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,15 +16,32 @@ class CommandProcessor {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private Map<String, Class<? extends ICommand>> commands = Map.of (
-            "user_login", UserLogin.class,
-            "bujdit_create", BujditCreate.class,
-            "bujdit_list", BujditList.class,
-            "bujdit_delete", BujditDelete.class,
-            "bujdit_meta_get", BujditMetaGet.class,
-            "bujdit_meta_set", BujditMetaSet.class,
-            "bujdit_user_meta_get", BujditUserMetaGet.class,
-            "bujdit_user_meta_set", BujditUserMetaSet.class
+    private Map<String, Class<? extends ICommand>> commands = Map.ofEntries (
+            Map.entry("user_login", UserLogin.class),
+
+            Map.entry("bujdit_create", BujditCreate.class),
+            Map.entry("bujdit_list", BujditList.class),
+            Map.entry("bujdit_delete", BujditDelete.class),
+            Map.entry("bujdit_meta_get", BujditMetaGet.class),
+            Map.entry("bujdit_meta_set", BujditMetaSet.class),
+            Map.entry("bujdit_user_meta_get", BujditUserMetaGet.class),
+            Map.entry("bujdit_user_meta_set", BujditUserMetaSet.class),
+
+            Map.entry("shnopping_create", ShnoppingCreate.class),
+            Map.entry("shnopping_list", ShnoppingList.class),
+            Map.entry("shnopping_delete", ShnoppingDelete.class),
+            Map.entry("shnopping_meta_get", ShnoppingMetaGet.class),
+            Map.entry("shnopping_meta_set", ShnoppingMetaSet.class),
+            Map.entry("shnopping_user_meta_get", ShnoppingUserMetaGet.class),
+            Map.entry("shnopping_user_meta_set", ShnoppingUserMetaSet.class),
+
+            Map.entry("shnopping_store_create", ShnoppingStoreCreate.class),
+            Map.entry("shnopping_store_list", ShnoppingStoreList.class),
+            Map.entry("shnopping_store_delete", ShnoppingStoreDelete.class),
+
+            Map.entry("shnopping_item_create", ShnoppingItemCreate.class),
+            Map.entry("shnopping_item_list", ShnoppingItemList.class),
+            Map.entry("shnopping_item_delete", ShnoppingItemDelete.class)
     );
 
     CommandProcessor() {}
@@ -42,7 +59,7 @@ class CommandProcessor {
     JsonNode process(JsonNode reqRoot) {
         ObjectNode resRoot = mapper.createObjectNode();
 
-        try (DBConnection dbcon = new DBConnection()) {
+        try (Connection dbcon = new Connection()) {
 
             RequestPersist pers = new RequestPersist();
 
